@@ -62,8 +62,9 @@ button:not(:disabled) {
 .glass {
   background: linear-gradient(180deg, rgb(255 255 255 / 0.055), rgb(255 255 255 / 0.02));
   border: 1px solid rgb(255 255 255 / 0.08);
+  /* bez ręcznego -webkit-: minifikator w buildzie scalał parę i zostawiał tylko wersję z prefiksem,
+     której Chrome nie obsługuje (karty traciły rozmycie i kula prześwitywała). Prefiksy dodaje sam build. */
   backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
 }
 
 /* Karta: przechył 3D + poświata pod kursorem (zmienne ustawia useTilt) */
