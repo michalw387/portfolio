@@ -37,6 +37,7 @@ type Content = {
   }
   contact: { kicker: string; title: string; text: string; mail: string; copied: string; copy: string }
   footer: string
+  toTop: string
 }
 
 const gh = (repo: string) => `${links.github}/${repo}`
@@ -60,7 +61,7 @@ export const content: Record<Lang, Content> = {
       scroll: 'przewiń',
     },
     about: {
-      kicker: '01 — O mnie',
+      kicker: 'O mnie',
       title: 'Od olimpiady z algorytmiki do sygnałów z mózgu',
       paragraphs: [
         'Studiuję inżynierię systemów na Politechnice Wrocławskiej. W Kole Naukowym Neuroinformatyki „Neuron” pracowałem nad projektami uczenia maszynowego opartymi na EEG: prowadziłem czteroosobowy zespół budujący system wykrywania emocji z sygnałów EEG, a w sekcji AI projektu NeuroGuard rozwijałem modele do weryfikacji biometrycznej.',
@@ -74,7 +75,7 @@ export const content: Record<Lang, Content> = {
       ],
     },
     skills: {
-      kicker: '02 — Umiejętności',
+      kicker: 'Umiejętności',
       title: 'Tech stack',
       groups: [
         { title: 'Języki', items: ['Python', 'C++', 'C#', 'SQL'] },
@@ -90,7 +91,7 @@ export const content: Record<Lang, Content> = {
       ],
     },
     projects: {
-      kicker: '03 — Projekty',
+      kicker: 'Projekty',
       title: 'Wybrane projekty',
       subtitle: 'Od badań nad EEG po narzędzia, które działają na co dzień.',
       code: 'Kod',
@@ -151,7 +152,7 @@ export const content: Record<Lang, Content> = {
       ],
     },
     timeline: {
-      kicker: '04 — Wykształcenie & Osiągnięcia',
+      kicker: 'Wykształcenie & Osiągnięcia',
       title: 'Droga do tej pory',
       education: 'Wykształcenie i działalność',
       achievements: 'Osiągnięcia',
@@ -198,7 +199,7 @@ export const content: Record<Lang, Content> = {
       ],
     },
     contact: {
-      kicker: '05 — Kontakt',
+      kicker: 'Kontakt',
       title: 'Porozmawiajmy',
       text: 'Szukam stażu lub pierwszej pracy, w której wykorzystam Pythona, ML i chęć szybkiej nauki. Najszybciej złapiesz mnie mailowo.',
       mail: 'Napisz do mnie',
@@ -206,6 +207,7 @@ export const content: Record<Lang, Content> = {
       copied: 'Skopiowano!',
     },
     footer: 'Zaprojektowane i zbudowane w React, TypeScript, Tailwind CSS i Three.js.',
+    toTop: 'Wróć na górę',
   },
 
   en: {
@@ -226,7 +228,7 @@ export const content: Record<Lang, Content> = {
       scroll: 'scroll',
     },
     about: {
-      kicker: '01 — About',
+      kicker: 'About',
       title: 'From algorithm olympiads to brain signals',
       paragraphs: [
         'I study Systems Engineering at Wrocław University of Science and Technology. In the Neuroinformatics Scientific Club “Neuron” I worked on machine learning projects based on EEG: I led a team of four building an EEG-based emotion detection system and developed biometric verification models in the AI section of the NeuroGuard project.',
@@ -240,7 +242,7 @@ export const content: Record<Lang, Content> = {
       ],
     },
     skills: {
-      kicker: '02 — Skills',
+      kicker: 'Skills',
       title: 'Tech stack',
       groups: [
         { title: 'Languages', items: ['Python', 'C++', 'C#', 'SQL'] },
@@ -256,7 +258,7 @@ export const content: Record<Lang, Content> = {
       ],
     },
     projects: {
-      kicker: '03 — Projects',
+      kicker: 'Projects',
       title: 'Featured projects',
       subtitle: 'From EEG research to tools that run every day.',
       code: 'Code',
@@ -317,7 +319,7 @@ export const content: Record<Lang, Content> = {
       ],
     },
     timeline: {
-      kicker: '04 — Education & Achievements',
+      kicker: 'Education & Achievements',
       title: 'The path so far',
       education: 'Education & activity',
       achievements: 'Achievements',
@@ -364,7 +366,7 @@ export const content: Record<Lang, Content> = {
       ],
     },
     contact: {
-      kicker: '05 — Contact',
+      kicker: 'Contact',
       title: "Let's talk",
       text: 'I am looking for an internship or a first job where I can use Python, ML and my drive to learn fast. Email is the quickest way to reach me.',
       mail: 'Email me',
@@ -372,5 +374,7 @@ export const content: Record<Lang, Content> = {
       copied: 'Copied!',
     },
     footer: 'Designed and built with React, TypeScript, Tailwind CSS and Three.js.',
+    // nie „Back to top”: listy „annoyances” blokerów reklam ukrywają przyciski z dokładnie tą etykietą
+    toTop: 'Return to the top',
   },
 }

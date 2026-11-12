@@ -3,6 +3,7 @@ import {
   ArrowUpRight,
   Check,
   ChevronDown,
+  ChevronUp,
   Copy,
   Download,
   GraduationCap,
@@ -94,12 +95,21 @@ const btn =
   'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition duration-200 hover:-translate-y-0.5 active:translate-y-0'
 const btnPrimary = `${btn} bg-gradient-to-r from-cyan to-violet text-slate-950 shadow-[0_0_30px_-8px] shadow-cyan/60 hover:shadow-cyan/90`
 const btnGhost = `${btn} glass text-ink hover:border-white/25 hover:bg-white/10`
+// Pasek i menu: ciemne tło (a nie .glass), żeby tekst był czytelny także nad jasnymi elementami strony
+const headerBg = 'border border-white/10 bg-bg/80 backdrop-blur-xl'
 
-function Section({ id, kicker, title, children }: { id: string; kicker: string; title: string; children: ReactNode }) {
+/** Kolejność sekcji na stronie: z niej biorą się linki w menu i numery „01 —” nad nagłówkami. */
+const sections = ['about', 'projects', 'skills', 'achievements', 'contact'] as const
+type SectionId = (typeof sections)[number]
+
+function Section({ id, kicker, title, children }: { id: SectionId; kicker: string; title: string; children: ReactNode }) {
+  const n = String(sections.indexOf(id) + 1).padStart(2, '0')
   return (
     <section id={id} className="mx-auto max-w-6xl px-5 py-20 sm:px-8 sm:py-28">
       <div className="reveal mb-12">
-        <p className="mb-3 font-mono text-xs tracking-widest text-cyan uppercase">{kicker}</p>
+        <p className="mb-3 font-mono text-xs tracking-widest text-cyan uppercase">
+          {n} — {kicker}
+        </p>
         <h2 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">{title}</h2>
       </div>
       {children}
@@ -193,13 +203,7 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const nav = [
-    ['#about', t.nav.about],
-    ['#projects', t.nav.projects],
-    ['#skills', t.nav.skills],
-    ['#achievements', t.nav.achievements],
-    ['#contact', t.nav.contact],
-  ]
+  const nav = sections.map((id) => [`#${id}`, t.nav[id]])
 
   const copyEmail = async () => {
     await navigator.clipboard.writeText(links.email)
@@ -215,8 +219,10 @@ export default function App() {
 
   return (
     <>
-      <div aria-hidden className="spotlight pointer-events-none fixed inset-0 -z-20" />
-      <div aria-hidden className="grid-bg pointer-events-none fixed inset-0 -z-20" />
+      {/* Tło: warstwa z-0 (kolejność w DOM: poświata → siatka → scena), treść ma z-10.
+          h-lvh = wysokość ekranu ze schowanym paskiem adresu — tło nie „doskakuje” przy scrollu na telefonie. */}
+      <div aria-hidden className="spotlight pointer-events-none fixed inset-x-0 top-0 z-0 h-lvh" />
+      <div aria-hidden className="grid-bg pointer-events-none fixed inset-x-0 top-0 z-0 h-lvh" />
       <Suspense fallback={null}>
         <Scene />
       </Suspense>
@@ -225,7 +231,7 @@ export default function App() {
       <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-6">
         <div
           className={`mx-auto flex max-w-6xl items-center justify-between rounded-2xl px-4 py-2.5 transition-all duration-300 ${
-            scrolled || menuOpen ? 'glass shadow-lg shadow-black/30' : 'border border-transparent'
+            scrolled || menuOpen ? `${headerBg} shadow-lg shadow-black/30` : 'border border-transparent'
           }`}
         >
           <a href="#top" className="font-mono text-lg font-medium tracking-tight" aria-label="Michał Wiśniewski">
@@ -268,7 +274,7 @@ export default function App() {
         </div>
 
         {menuOpen && (
-          <nav className="glass mx-auto mt-2 flex max-w-6xl flex-col rounded-2xl p-2 lg:hidden" aria-label="Mobile">
+          <nav className={`${headerBg} mx-auto mt-2 flex max-w-6xl flex-col rounded-2xl p-2 lg:hidden`} aria-label="Mobile">
             {nav.map(([href, label]) => (
               <a
                 key={href}
@@ -286,7 +292,7 @@ export default function App() {
         )}
       </header>
 
-      <main id="top">
+      <main id="top" className="relative z-10">
         {/* ---------- Hero ---------- */}
         <section className="relative mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-5 pt-24 pb-16 sm:px-8">
           <div className="max-w-2xl">
@@ -325,7 +331,9 @@ export default function App() {
 
           <a
             href="#about"
-            className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 font-mono text-[11px] text-muted transition hover:text-ink"
+            className={`absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 font-mono text-[11px] text-muted transition-all duration-300 hover:text-ink ${
+              scrolled ? 'invisible opacity-0' : ''
+            }`}
           >
             {t.hero.scroll}
             <ChevronDown className="size-4 motion-safe:animate-bounce" />
@@ -419,7 +427,20 @@ export default function App() {
         </Section>
       </main>
 
-      <footer className="border-t border-white/8 px-5 py-8 text-center text-xs text-muted">
+      {/* Powrót na górę: odwrotność przycisku „przewiń” — widoczny tylko po rozpoczęciu przewijania.
+          scrollTo bez `behavior` używa CSS scroll-behavior, więc respektuje prefers-reduced-motion. */}
+      <button
+        onClick={() => window.scrollTo({ top: 0 })}
+        aria-label={t.toTop}
+        title={t.toTop}
+        className={`glass fixed right-5 bottom-5 z-40 rounded-full p-3 text-muted shadow-lg shadow-black/30 transition-all duration-300 hover:-translate-y-1 hover:border-cyan/50 hover:text-cyan sm:right-8 sm:bottom-8 ${
+          scrolled ? '' : 'invisible translate-y-2 opacity-0'
+        }`}
+      >
+        <ChevronUp className="size-5" />
+      </button>
+
+      <footer className="relative z-10 border-t border-white/8 px-5 py-8 text-center text-xs text-muted">
         <p>© {year} Michał Wiśniewski</p>
         <p className="mt-1">{t.footer}</p>
       </footer>

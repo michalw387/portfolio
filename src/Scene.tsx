@@ -57,14 +57,22 @@ export default function Scene() {
     core.add(inner)
     scene.add(core)
 
-    // Pole cząsteczek w tle
-    const COUNT = 700
+    // Pole cząsteczek w tle: powłoka wokół środka sceny. Pole obraca się wokół środka, więc odległość
+    // cząsteczki od środka jest stała; skoro jest większa niż najdalsza pozycja kamery (z = 10),
+    // każda widoczna cząsteczka leży za kulą i nigdy nie wlatuje między nią a ekran.
+    const COUNT = 900
+    const R_MIN = 12
+    const R_MAX = 22
     const pos = new Float32Array(COUNT * 3)
-    for (let i = 0; i < COUNT * 3; i++) pos[i] = (Math.random() - 0.5) * 30
+    const v = new THREE.Vector3()
+    for (let i = 0; i < COUNT; i++) {
+      v.randomDirection().multiplyScalar(R_MIN + Math.random() * (R_MAX - R_MIN))
+      v.toArray(pos, i * 3)
+    }
     const starGeo = new THREE.BufferGeometry()
     starGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
     const starMat = new THREE.PointsMaterial({
-      size: 0.03,
+      size: 0.05, // cząsteczki są teraz dalej, więc nieco większe, by zachować podobny wygląd
       color: 0xa5b4fc,
       transparent: true,
       opacity: 0.55,
@@ -84,8 +92,12 @@ export default function Scene() {
       dim = w / h > 1.1 ? 1 : 0.45
       camera.updateProjectionMatrix()
     }
-    resize()
-    window.addEventListener('resize', resize)
+    // Kontener ma wysokość 100lvh, więc chowanie paska adresu na telefonie nie zmienia jego rozmiaru;
+    // obserwujemy kontener zamiast okna, żeby nie przebudowywać sceny w trakcie przewijania.
+    const ro = new ResizeObserver(() => {
+      resize()
+      if (reduced) frame()
+    })
 
     const target = { x: 0, y: 0 }
     const onMove = (e: PointerEvent) => {
@@ -127,14 +139,14 @@ export default function Scene() {
       renderer.render(scene, camera)
       if (!reduced) raf = requestAnimationFrame(frame)
     }
+    resize()
     frame()
-    // przy ograniczonym ruchu: statyczna klatka, odświeżana tylko przy zmianie rozmiaru
-    if (reduced) window.addEventListener('resize', frame)
+    // przy ograniczonym ruchu: statyczna klatka, odświeżana tylko przy zmianie rozmiaru (patrz ResizeObserver)
+    ro.observe(el)
 
     return () => {
       cancelAnimationFrame(raf)
-      window.removeEventListener('resize', resize)
-      window.removeEventListener('resize', frame)
+      ro.disconnect()
       window.removeEventListener('pointermove', onMove)
       for (const g of [ico, nodeGeo, wire, innerGeo, innerWire, starGeo]) g.dispose()
       for (const m of [nodeMat, lineMat, innerMat, starMat]) m.dispose()
@@ -143,5 +155,5 @@ export default function Scene() {
     }
   }, [])
 
-  return <div ref={mount} aria-hidden className="pointer-events-none fixed inset-0 -z-10" />
+  return <div ref={mount} aria-hidden className="pointer-events-none fixed inset-x-0 top-0 z-0 h-lvh" />
 }
