@@ -1,0 +1,131 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', ui-sans-serif, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --color-bg: #07080d;
+  --color-ink: #e6e9f2;
+  --color-muted: #8b93a7;
+  --color-cyan: #22d3ee;
+  --color-violet: #8b5cf6;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Tailwind 4 nie ustawia kursora-rączki na przyciskach */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-violet) 50%, transparent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Tło: poświata podążająca za kursorem; jej barwa zależy od pozycji myszy (--hue) */
+.spotlight {
+  background:
+    radial-gradient(
+      600px circle at var(--mx, 50%) var(--my, 30%),
+      hsl(var(--hue, 200) 90% 60% / 0.13),
+      transparent 65%
+    ),
+    radial-gradient(900px circle at 85% -10%, hsl(265 90% 60% / 0.12), transparent 60%),
+    radial-gradient(700px circle at 0% 100%, hsl(190 90% 50% / 0.08), transparent 60%);
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 20%, black, transparent);
+}
+
+.glass {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.055), rgb(255 255 255 / 0.02));
+  border: 1px solid rgb(255 255 255 / 0.08);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Karta: przechył 3D + poświata pod kursorem (zmienne ustawia useTilt) */
+.card {
+  position: relative;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition:
+    transform 0.25s ease-out,
+    border-color 0.25s;
+  will-change: transform;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    380px circle at var(--cx, 50%) var(--cy, 50%),
+    hsl(var(--hue, 200) 90% 65% / 0.14),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.card:hover {
+  border-color: rgb(255 255 255 / 0.18);
+}
+.card:hover::before {
+  opacity: 1;
+}
+
+.gradient-text {
+  background: linear-gradient(100deg, var(--color-cyan), var(--color-violet) 70%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .card {
+    transform: none;
+    transition: none;
+  }
+}
