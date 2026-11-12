@@ -81,15 +81,21 @@ export default function Scene() {
     const stars = new THREE.Points(starGeo, starMat)
     scene.add(stars)
 
-    let dim = 1 // na wąskich ekranach scena leży pod tekstem, więc jest ciemniejsza
+    // Na wąskich ekranach scena leży pod tekstem, więc jest ciemniejsza. Najmocniej przygaszone są węzły:
+    // jasne punkty (mieszane addytywnie) między literami najbardziej utrudniają czytanie.
+    let dim = 1
+    let nodeDim = 1
     const resize = () => {
       const { clientWidth: w, clientHeight: h } = el
       renderer.setSize(w, h)
       camera.aspect = w / h
+      const narrow = w / h <= 1.1
       // na wąskich ekranach scena jest wyśrodkowana, na szerokich przesunięta w prawo
-      core.position.x = w / h > 1.1 ? 2.6 : 0
-      core.scale.setScalar(w / h > 1.1 ? 1 : 0.8)
-      dim = w / h > 1.1 ? 1 : 0.45
+      core.position.x = narrow ? 0 : 2.6
+      core.scale.setScalar(narrow ? 0.8 : 1)
+      dim = narrow ? 0.45 : 1
+      nodeDim = narrow ? 0.2 : 1
+      nodeMat.size = narrow ? 0.04 : 0.055
       camera.updateProjectionMatrix()
     }
     // Kontener ma wysokość 100lvh, więc chowanie paska adresu na telefonie nie zmienia jego rozmiaru;
@@ -131,10 +137,10 @@ export default function Scene() {
       stars.rotation.x = cur.y * 0.05 + cur.scroll * 0.6
       nodeMat.color.lerpColors(cyan, pink, cur.scroll)
       // w dalszych sekcjach scena przygasa, żeby nie przeszkadzać w czytaniu
-      const fade = dim * (1 - Math.min(cur.scroll * 2.2, 0.8))
-      nodeMat.opacity = 0.95 * fade
-      lineMat.opacity = 0.28 * fade
-      innerMat.opacity = 0.2 * fade
+      const fade = 1 - Math.min(cur.scroll * 2.2, 0.8)
+      nodeMat.opacity = 0.95 * nodeDim * fade
+      lineMat.opacity = 0.28 * dim * fade
+      innerMat.opacity = 0.2 * dim * fade
 
       renderer.render(scene, camera)
       if (!reduced) raf = requestAnimationFrame(frame)
