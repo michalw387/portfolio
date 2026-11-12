@@ -119,7 +119,8 @@ export const content: Record<Lang, Content> = {
             'Osobisty asystent szukania mieszkań: cyklicznie skanuje nowe ogłoszenia, ocenia je przez AI w skali 0–100 według własnych kryteriów, wykrywa duplikaty i wysyła powiadomienia o najlepszych ofertach oraz obniżkach cen.',
           tags: ['Python', 'Streamlit', 'SQLAlchemy', 'Playwright', 'LLM'],
           art: 'home',
-          note: 'Repozytorium wkrótce',
+          repo: gh('otodom-analyzer'),
+          details: gh('otodom-analyzer') + '#readme',
         },
         {
           title: 'Facial Emotion Recognition',
@@ -284,7 +285,8 @@ export const content: Record<Lang, Content> = {
             'A personal flat-hunting assistant: periodically scans new listings, scores them 0–100 with AI against custom criteria, detects duplicates and sends notifications about top offers and price drops.',
           tags: ['Python', 'Streamlit', 'SQLAlchemy', 'Playwright', 'LLM'],
           art: 'home',
-          note: 'Repository coming soon',
+          repo: gh('otodom-analyzer'),
+          details: gh('otodom-analyzer') + '#readme',
         },
         {
           title: 'Facial Emotion Recognition',
